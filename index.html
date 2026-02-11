@@ -563,6 +563,16 @@
                 </div>
                 
                 <div class="input-group">
+                    <label for="winner-name">Winner Name (Optional)</label>
+                    <input type="text" id="winner-name" placeholder="e.g., Mohammad Rahman">
+                </div>
+
+                <div class="input-group">
+                    <label for="winner-symbol">Election Symbol (Optional)</label>
+                    <input type="text" id="winner-symbol" placeholder="e.g., Balance, Paddy, Boat">
+                </div>
+                
+                <div class="input-group">
                     <label for="jamaat-votes">Jamaat Alliance Votes</label>
                     <input type="number" id="jamaat-votes" placeholder="0" min="0">
                 </div>
@@ -583,6 +593,7 @@
                 <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear All</button>
                 <button class="btn" onclick="exportData()">💾 Export</button>
                 <button class="btn" onclick="document.getElementById('import-file').click()">📁 Import</button>
+                <button class="btn btn-clear" onclick="resetDataFresh()" style="font-size: 0.8rem;">🔄 Reset Fresh</button>
             </div>
             
             <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
@@ -713,8 +724,6 @@
 
     <script>
         // ============ CONFIGURATION ============
-        const SHEET_URL = "https://opensheet.elk.sh/1GCKtdxwHsJ6CoHU8KurqlS_O_c_kMf6NnzfuDainLHM/data";
-        const REFRESH_INTERVAL = 10000; // 10 seconds
         const TOTAL_SEATS = 300;
         const SEATS_TO_WIN = 151;
         const ADMIN_PASSWORD = "bangladesh2026";
@@ -796,6 +805,8 @@
                 number: i + 1,
                 name: constituencyNames[i],
                 winner: 'uncalled',
+                winnerName: '',
+                winnerSymbol: '',
                 jamaatVotes: 0,
                 bnpVotes: 0,
                 othersVotes: 0,
@@ -838,6 +849,8 @@
                 const constNum = parseInt(this.value);
                 if (constNum) {
                     const c = constituencies[constNum - 1];
+                    document.getElementById('winner-name').value = c.winnerName || '';
+                    document.getElementById('winner-symbol').value = c.winnerSymbol || '';
                     document.getElementById('jamaat-votes').value = c.reporting ? c.jamaatVotes : '';
                     document.getElementById('bnp-votes').value = c.reporting ? c.bnpVotes : '';
                     document.getElementById('others-votes').value = c.reporting ? c.othersVotes : '';
@@ -863,53 +876,49 @@
                 }
             }
         }
-        
-        async function loadData() {
-    try {
-        const res = await fetch(SHEET_URL);
-        const rows = await res.json();
 
-        // Reset all first
-        constituencies.forEach(c => {
-            c.jamaatVotes = 0;
-            c.bnpVotes = 0;
-            c.othersVotes = 0;
-            c.reporting = false;
-            c.winner = "uncalled";
-        });
-
-        rows.forEach(row => {
-            const idx = parseInt(row.number) - 1;
-            if (!constituencies[idx]) return;
-
-            const j = parseInt(row.jamaatVotes) || 0;
-            const b = parseInt(row.bnpVotes) || 0;
-            const o = parseInt(row.othersVotes) || 0;
-
-            constituencies[idx].jamaatVotes = j;
-            constituencies[idx].bnpVotes = b;
-            constituencies[idx].othersVotes = o;
-            constituencies[idx].reporting = row.reporting === "TRUE";
-
-            if (!constituencies[idx].reporting) {
-                constituencies[idx].winner = "uncalled";
-            } else {
-                constituencies[idx].winner =
-                    j > b && j > o ? "jamaat" :
-                    b > j && b > o ? "bnp" :
-                    o > j && o > b ? "others" :
-                    "uncalled";
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('electionData');
+                if (saved) {
+                    const loaded = JSON.parse(saved);
+                    // Ensure all constituencies have all required fields
+                    constituencies = loaded.map((c, i) => ({
+                        number: c.number || (i + 1),
+                        name: c.name || constituencyNames[i],
+                        winner: c.winner || 'uncalled',
+                        winnerName: c.winnerName || '',
+                        winnerSymbol: c.winnerSymbol || '',
+                        jamaatVotes: parseInt(c.jamaatVotes) || 0,
+                        bnpVotes: parseInt(c.bnpVotes) || 0,
+                        othersVotes: parseInt(c.othersVotes) || 0,
+                        reporting: c.reporting || false
+                    }));
+                    console.log('Data loaded successfully');
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                // Reset to fresh data if there's an error
+                constituencies = [];
+                for (let i = 0; i < TOTAL_SEATS; i++) {
+                    constituencies.push({
+                        number: i + 1,
+                        name: constituencyNames[i],
+                        winner: 'uncalled',
+                        winnerName: '',
+                        winnerSymbol: '',
+                        jamaatVotes: 0,
+                        bnpVotes: 0,
+                        othersVotes: 0,
+                        reporting: false
+                    });
+                }
             }
-        });
+        }
 
-        renderMap();
-        updateResults();
-        populateDropdown();
-
-    } catch (err) {
-        console.error("❌ Failed to load Google Sheet", err);
-    }
-}
+        function saveData() {
+            localStorage.setItem('electionData', JSON.stringify(constituencies));
+        }
 
         function populateDropdown() {
             const select = document.getElementById('constituency-select');
@@ -929,6 +938,8 @@
             }
             
             const constNum = parseInt(document.getElementById('constituency-select').value);
+            const winnerName = document.getElementById('winner-name').value.trim();
+            const winnerSymbol = document.getElementById('winner-symbol').value.trim();
             const jamaatVotes = parseInt(document.getElementById('jamaat-votes').value) || 0;
             const bnpVotes = parseInt(document.getElementById('bnp-votes').value) || 0;
             const othersVotes = parseInt(document.getElementById('others-votes').value) || 0;
@@ -947,6 +958,8 @@
                 c.othersVotes = 0;
                 c.reporting = false;
                 c.winner = 'uncalled';
+                c.winnerName = '';
+                c.winnerSymbol = '';
                 
                 clearInputs();
                 updateDisplay();
@@ -954,6 +967,8 @@
                 return;
             }
 
+            c.winnerName = winnerName;
+            c.winnerSymbol = winnerSymbol;
             c.jamaatVotes = jamaatVotes;
             c.bnpVotes = bnpVotes;
             c.othersVotes = othersVotes;
@@ -975,6 +990,8 @@
         }
 
         function clearInputs() {
+            document.getElementById('winner-name').value = '';
+            document.getElementById('winner-symbol').value = '';
             document.getElementById('jamaat-votes').value = '';
             document.getElementById('bnp-votes').value = '';
             document.getElementById('others-votes').value = '';
@@ -984,6 +1001,7 @@
         function updateDisplay() {
             renderMap();
             updateResults();
+            saveData();
             populateDropdown();
         }
 
@@ -995,6 +1013,8 @@
             if (confirm('Clear ALL data? This cannot be undone!')) {
                 constituencies.forEach(c => {
                     c.winner = 'uncalled';
+                    c.winnerName = '';
+                    c.winnerSymbol = '';
                     c.jamaatVotes = 0;
                     c.bnpVotes = 0;
                     c.othersVotes = 0;
@@ -1003,6 +1023,17 @@
                 clearInputs();
                 updateDisplay();
                 alert('All data cleared!');
+            }
+        }
+
+        function resetDataFresh() {
+            if (!isAdminAuthenticated) {
+                alert('Please login first!');
+                return;
+            }
+            if (confirm('This will completely reset the app and clear localStorage. Continue?')) {
+                localStorage.clear();
+                location.reload();
             }
         }
 
@@ -1103,12 +1134,20 @@
             } else {
                 const total = c.jamaatVotes + c.bnpVotes + c.othersVotes;
                 const winnerName = c.winner === 'jamaat' ? 'Jamaat Alliance' : c.winner === 'bnp' ? 'BNP' : c.winner === 'others' ? 'Others' : 'Tie';
-                details.innerHTML = `
-                    <strong>Winner:</strong> ${winnerName}<br>
+                
+                let html = `<strong>Winner:</strong> ${winnerName}`;
+                if (c.winnerName) {
+                    html += `<br><strong>Elected:</strong> ${c.winnerName}`;
+                }
+                if (c.winnerSymbol) {
+                    html += `<br><strong>Symbol:</strong> ${c.winnerSymbol}`;
+                }
+                html += `<br><br>
                     Jamaat Alliance: ${c.jamaatVotes.toLocaleString()} (${((c.jamaatVotes / total) * 100).toFixed(1)}%)<br>
                     BNP: ${c.bnpVotes.toLocaleString()} (${((c.bnpVotes / total) * 100).toFixed(1)}%)<br>
                     Others: ${c.othersVotes.toLocaleString()} (${((c.othersVotes / total) * 100).toFixed(1)}%)
                 `;
+                details.innerHTML = html;
             }
 
             const rect = e.target.getBoundingClientRect();
@@ -1145,6 +1184,9 @@
             const bPct = total > 0 ? (bnpVotes / total * 100).toFixed(1) : 0;
             const oPct = total > 0 ? (othersVotes / total * 100).toFixed(1) : 0;
 
+            console.log('Vote totals:', { jamaatVotes, bnpVotes, othersVotes, total });
+            console.log('Percentages:', { jPct, bPct, oPct });
+
             document.getElementById('jamaat-seats').textContent = jamaatSeats;
             document.getElementById('bnp-seats').textContent = bnpSeats;
             document.getElementById('others-seats').textContent = othersSeats;
@@ -1162,10 +1204,9 @@
         }
 
         loadData();
-        setInterval(loadData, REFRESH_INTERVAL);
+        populateDropdown();
         renderMap();
         updateResults();
-        populateDropdown();
         
         document.getElementById('login-panel').classList.add('hidden');
     </script>
