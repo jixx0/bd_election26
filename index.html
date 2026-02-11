@@ -713,6 +713,8 @@
 
     <script>
         // ============ CONFIGURATION ============
+        const SHEET_URL = "https://opensheet.elk.sh/1GCKtdxwHsJ6CoHU8KurqlS_O_c_kMf6NnzfuDainLHM/data";
+        const REFRESH_INTERVAL = 10000; // 10 seconds
         const TOTAL_SEATS = 300;
         const SEATS_TO_WIN = 151;
         const ADMIN_PASSWORD = "bangladesh2026";
@@ -861,17 +863,53 @@
                 }
             }
         }
+        
+        async function loadData() {
+    try {
+        const res = await fetch(SHEET_URL);
+        const rows = await res.json();
 
-        function loadData() {
-            const saved = localStorage.getItem('electionData');
-            if (saved) {
-                constituencies = JSON.parse(saved);
+        // Reset all first
+        constituencies.forEach(c => {
+            c.jamaatVotes = 0;
+            c.bnpVotes = 0;
+            c.othersVotes = 0;
+            c.reporting = false;
+            c.winner = "uncalled";
+        });
+
+        rows.forEach(row => {
+            const idx = parseInt(row.number) - 1;
+            if (!constituencies[idx]) return;
+
+            const j = parseInt(row.jamaatVotes) || 0;
+            const b = parseInt(row.bnpVotes) || 0;
+            const o = parseInt(row.othersVotes) || 0;
+
+            constituencies[idx].jamaatVotes = j;
+            constituencies[idx].bnpVotes = b;
+            constituencies[idx].othersVotes = o;
+            constituencies[idx].reporting = row.reporting === "TRUE";
+
+            if (!constituencies[idx].reporting) {
+                constituencies[idx].winner = "uncalled";
+            } else {
+                constituencies[idx].winner =
+                    j > b && j > o ? "jamaat" :
+                    b > j && b > o ? "bnp" :
+                    o > j && o > b ? "others" :
+                    "uncalled";
             }
-        }
+        });
 
-        function saveData() {
-            localStorage.setItem('electionData', JSON.stringify(constituencies));
-        }
+        renderMap();
+        updateResults();
+        populateDropdown();
+
+    } catch (err) {
+        console.error("❌ Failed to load Google Sheet", err);
+    }
+}
 
         function populateDropdown() {
             const select = document.getElementById('constituency-select');
@@ -946,7 +984,6 @@
         function updateDisplay() {
             renderMap();
             updateResults();
-            saveData();
             populateDropdown();
         }
 
@@ -1125,6 +1162,7 @@
         }
 
         loadData();
+        setInterval(loadData, REFRESH_INTERVAL);
         renderMap();
         updateResults();
         populateDropdown();
