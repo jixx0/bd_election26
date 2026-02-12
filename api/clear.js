@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
-
+    
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -22,12 +22,12 @@ module.exports = async (req, res) => {
         if (password !== ADMIN_PASSWORD) {
             return res.status(403).json({ error: 'Invalid password' });
         }
-
+        
         const values = [];
         for (let i = 0; i < 300; i++) {
             values.push(['', '', 0, 0, 0]);
         }
-
+        
         const range = 'Sheet1!C2:G301';
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?valueInputOption=RAW&key=${API_KEY}`;
         
@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
                 values: values
             })
         });
-
+        
         if (!response.ok) {
             const error = await response.text();
             console.error('Google Sheets API Error:', error);
@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
                 details: error
             });
         }
-
+        
         res.status(200).json({ success: true, timestamp: Date.now() });
     } catch (error) {
         console.error('Clear error:', error);
