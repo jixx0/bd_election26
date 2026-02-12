@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
-
+    
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -22,11 +22,11 @@ module.exports = async (req, res) => {
         if (password !== ADMIN_PASSWORD) {
             return res.status(403).json({ error: 'Invalid password' });
         }
-
+        
         if (!constituencyNumber || constituencyNumber < 1 || constituencyNumber > 300) {
             return res.status(400).json({ error: 'Invalid constituency number' });
         }
-
+        
         const rowNumber = constituencyNumber + 1;
         
         const values = [[
@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
             bnpVotes || 0,
             othersVotes || 0
         ]];
-
+        
         const range = `Sheet1!A${rowNumber}:G${rowNumber}`;
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?valueInputOption=RAW&key=${API_KEY}`;
         
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
                 values: values
             })
         });
-
+        
         if (!response.ok) {
             const error = await response.text();
             console.error('Google Sheets API Error:', error);
@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
                 details: error
             });
         }
-
+        
         const jVotes = parseInt(jamaatVotes) || 0;
         const bVotes = parseInt(bnpVotes) || 0;
         const oVotes = parseInt(othersVotes) || 0;
@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
         } else if (oVotes > jVotes && oVotes > bVotes) {
             winner = 'others';
         }
-
+        
         res.status(200).json({ 
             success: true, 
             constituency: {
