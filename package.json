@@ -1,0 +1,21 @@
+{
+  "name": "bangladesh-election-2026",
+  "version": "1.0.0",
+  "description": "Live Bangladesh Parliamentary Election Results 2026",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["bangladesh", "election", "results", "2026"],
+  "author": "",
+  "license": "MIT"
+}
+```
+
+## 6. `.gitignore` (Root of project)
+```
+node_modules
+.vercel
+.DS_Store
+*.log
