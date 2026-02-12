@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangladesh Parliamentary Election Results 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --jamaat-green: #359a5e;
+            --bnp-orange: #cb3131;
+            --others-purple: #f59e0b;
+            --neutral-bg: #0f1419;
+            --card-bg: #1a1f29;
+            --text-primary: #ffffff;
+            --text-secondary: #8b949e;
+            --accent-blue: #3b82f6;
+            --border-color: #2d3748;
+            --uncalled-gray: #4b5563;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f29 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(26, 31, 41, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+            letter-spacing: 1px;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(239, 68, 68, 0.15);
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .connection-status.connected {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #22c55e;
+        }
+
+        .connection-status.disconnected {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-panel {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 2px solid var(--accent-blue);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .admin-panel.hidden {
+            display: none;
+        }
+
+        .admin-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            color: var(--accent-blue);
+        }
+
+        .admin-instructions {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.8rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .input-group select option {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 0.5rem;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .results-overview {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .party-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .party-card-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .party-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+        }
+
+        .party-card.jamaat::before { color: var(--jamaat-green); }
+        .party-card.bnp::before { color: var(--bnp-orange); }
+        .party-card.others::before { color: var(--others-purple); }
+
+        .party-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-blue);
+        }
+
+        .party-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .party-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .party-icon.jamaat { background: #359a5e; }
+        .party-icon.bnp { background: #cb3131; }
+        .party-icon.others { background: #f59e0b; }
+
+        .party-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .party-stats {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-left: auto;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .seats-count {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            line-height: 1;
+            margin: 0;
+        }
+
+        .seats-label {
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        .vote-percentage {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-out;
+        }
+
+        .progress-fill.jamaat { background: #359a5e; }
+        .progress-fill.bnp { background: #cb3131; }
+        .progress-fill.others { background: #f59e0b; }
+
+        .map-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 2px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .map-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .map-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .constituency {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .constituency:hover {
+            transform: scale(1.1);
+            border-color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .constituency.jamaat { background: var(--jamaat-green); }
+        .constituency.bnp { background: var(--bnp-orange); }
+        .constituency.others { background: var(--others-purple); }
+        .constituency.uncalled { background: var(--uncalled-gray); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.8rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .tooltip {
+            position: fixed;
+            background: rgba(15, 20, 25, 0.98);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid var(--accent-blue);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 1001;
+            max-width: 300px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+            transform: translateX(-50%);
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid var(--accent-blue);
+        }
+
+        .tooltip.show { opacity: 1; }
+
+        .tooltip-title {
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+        }
+
+        .tooltip-details {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .toggle-admin {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 99;
+            opacity: 0.1;
+        }
+
+        .toggle-admin:hover {
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .map-container {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            }
+
+            .seats-count {
+                font-size: 3rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status disconnected" id="connectionStatus">
+        <span>●</span>
+        <span id="statusText">Loading...</span>
+    </div>
+
+    <header class="header">
+        <h1>BANGLADESH ELECTION 2026</h1>
+        <div class="subtitle">Parliamentary Results</div>
+        <div class="live-badge">
+            <span class="live-dot"></span>
+            <span>LIVE (Auto-refresh)</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Login Form -->
+        <div class="admin-panel hidden" id="login-panel" style="max-width: 200px; padding: 1rem; position: fixed; bottom: 20px; right: 20px; z-index: 98;">
+            <div class="input-group">
+                <input type="password" id="password-input" placeholder="..." style="font-size: 0.8rem; padding: 0.5rem;">
+            </div>
+            <div class="button-group" style="justify-content: center; margin-top: 0.5rem;">
+                <button class="btn" onclick="login()" style="padding: 0.5rem 1rem; font-size: 0.75rem;">OK</button>
+            </div>
+        </div>
+
+        <!-- Admin Panel (Password Protected) -->
+        <div class="admin-panel hidden" id="admin-panel">
+            <h2 class="admin-title">🔒 Admin Panel - Data Entry</h2>
+            <div class="admin-instructions">
+                <strong>📝 Instructions:</strong><br>
+                • <strong>Add/Edit:</strong> Select constituency, enter votes, click Update<br>
+                • <strong>Reset:</strong> Enter 0 for all parties, click Update<br>
+                • <strong>Updates sync to Google Sheet and all viewers instantly!</strong>
+            </div>
+            
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="constituency-select">Constituency</label>
+                    <select id="constituency-select">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="winner-name">Winner Name (Optional)</label>
+                    <input type="text" id="winner-name" placeholder="e.g., Mohammad Rahman">
+                </div>
+
+                <div class="input-group">
+                    <label for="winner-symbol">Election Symbol (Optional)</label>
+                    <input type="text" id="winner-symbol" placeholder="e.g., Balance, Paddy, Boat">
+                </div>
+                
+                <div class="input-group">
+                    <label for="jamaat-votes">Jamaat Alliance Votes</label>
+                    <input type="number" id="jamaat-votes" placeholder="0" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <label for="bnp-votes">BNP Votes</label>
+                    <input type="number" id="bnp-votes" placeholder="0" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label for="others-votes">Others Votes</label>
+                    <input type="number" id="others-votes" placeholder="0" min="0">
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="updateConstituency()">✅ Update Result</button>
+                <button class="btn btn-clear" onclick="clearAll()">🗑️ Clear All</button>
+                <button class="btn" onclick="exportData()">💾 Export</button>
+            </div>
+        </div>
+
+        <!-- Results Overview -->
+        <div class="results-overview">
+            <div class="party-card jamaat">
+                <div class="party-card-content">
+                    <div class="party-header">
+                        <div class="party-icon jamaat">JI</div>
+                        <div class="party-name">Jamaat Alliance</div>
+                    </div>
+                    <div class="party-stats">
+                        <div class="stat-item">
+                            <div class="seats-count" id="jamaat-seats">0</div>
+                            <div class="seats-label">Seats Won</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="vote-percentage" id="jamaat-percent">0%</div>
+                            <div class="seats-label">Vote Share</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill jamaat" id="jamaat-progress" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="party-card bnp">
+                <div class="party-card-content">
+                    <div class="party-header">
+                        <div class="party-icon bnp">BNP</div>
+                        <div class="party-name">Bangladesh Nationalist Party</div>
+                    </div>
+                    <div class="party-stats">
+                        <div class="stat-item">
+                            <div class="seats-count" id="bnp-seats">0</div>
+                            <div class="seats-label">Seats Won</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="vote-percentage" id="bnp-percent">0%</div>
+                            <div class="seats-label">Vote Share</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill bnp" id="bnp-progress" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="party-card others">
+                <div class="party-card-content">
+                    <div class="party-header">
+                        <div class="party-icon others">OTH</div>
+                        <div class="party-name">Others</div>
+                    </div>
+                    <div class="party-stats">
+                        <div class="stat-item">
+                            <div class="seats-count" id="others-seats">0</div>
+                            <div class="seats-label">Seats Won</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="vote-percentage" id="others-percent">0%</div>
+                            <div class="seats-label">Vote Share</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill others" id="others-progress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-section">
+            <div class="map-header">
+                <h2 class="map-title">CONSTITUENCY MAP</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: var(--jamaat-green)"></div>
+                        <span>Jamaat Alliance</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: var(--bnp-orange)"></div>
+                        <span>BNP</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: var(--others-purple)"></div>
+                        <span>Others</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: var(--uncalled-gray)"></div>
+                        <span>Uncalled</span>
+                    </div>
+                </div>
+            </div>
+            <div class="map-container" id="map"></div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Seats</div>
+                <div class="stat-value">300</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Seats to Win</div>
+                <div class="stat-value">151</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Results Declared</div>
+                <div class="stat-value" id="declared-count">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Votes</div>
+                <div class="stat-value" id="total-votes">0M</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="toggle-admin" onclick="toggleAdmin()" title=""></button>
+
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-title" id="tooltip-title"></div>
+        <div class="tooltip-details" id="tooltip-details"></div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "bangladesh2026";
+        const API_BASE = '/api';
+        const POLL_INTERVAL = 3000; // 3 seconds
+        
+        let isAdminAuthenticated = false;
+        let constituencies = [];
+        let pollTimer = null;
+
+        async function initPolling() {
+            await fetchData();
+            updateConnectionStatus(true);
+            
+            pollTimer = setInterval(async () => {
+                await fetchData();
+            }, POLL_INTERVAL);
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch(`${API_BASE}/data`);
+                if (!response.ok) throw new Error('Failed to fetch data');
+                
+                const data = await response.json();
+                
+                const dataStr = JSON.stringify(data);
+                const currentStr = JSON.stringify(constituencies);
+                
+                if (dataStr !== currentStr) {
+                    constituencies = data;
+                    updateDisplay();
+                }
+                
+                updateConnectionStatus(true);
+            } catch (error) {
+                console.error('Fetch error:', error);
+                updateConnectionStatus(false);
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (connected) {
+                statusEl.className = 'connection-status connected';
+                statusText.textContent = 'Live';
+            } else {
+                statusEl.className = 'connection-status disconnected';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function login() {
+            const password = document.getElementById('password-input').value;
+            if (password === ADMIN_PASSWORD) {
+                isAdminAuthenticated = true;
+                document.getElementById('login-panel').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+            } else {
+                alert("❌ Incorrect password!");
+                document.getElementById('password-input').value = '';
+            }
+        }
+
+        function toggleAdmin() {
+            const loginPanel = document.getElementById('login-panel');
+            const adminPanel = document.getElementById('admin-panel');
+            
+            if (!isAdminAuthenticated) {
+                if (loginPanel.classList.contains('hidden')) {
+                    loginPanel.classList.remove('hidden');
+                } else {
+                    loginPanel.classList.add('hidden');
+                }
+            } else {
+                if (adminPanel.classList.contains('hidden')) {
+                    adminPanel.classList.remove('hidden');
+                } else {
+                    adminPanel.classList.add('hidden');
+                }
+            }
+        }
+
+        function populateDropdown() {
+            const select = document.getElementById('constituency-select');
+            select.innerHTML = '<option value="">Select...</option>';
+            constituencies.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.number;
+                option.textContent = `${c.name}${c.reporting ? ' ✓' : ''}`;
+                select.appendChild(option);
+            });
+        }
+
+        async function updateConstituency() {
+            if (!isAdminAuthenticated) {
+                alert('Please login first!');
+                return;
+            }
+            
+            const constNum = parseInt(document.getElementById('constituency-select').value);
+            const winnerName = document.getElementById('winner-name').value.trim();
+            const winnerSymbol = document.getElementById('winner-symbol').value.trim();
+            const jamaatVotes = parseInt(document.getElementById('jamaat-votes').value) || 0;
+            const bnpVotes = parseInt(document.getElementById('bnp-votes').value) || 0;
+            const othersVotes = parseInt(document.getElementById('others-votes').value) || 0;
+
+            if (!constNum) {
+                alert('Please select a constituency!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        password: ADMIN_PASSWORD,
+                        constituencyNumber: constNum,
+                        winnerName,
+                        winnerSymbol,
+                        jamaatVotes,
+                        bnpVotes,
+                        othersVotes
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    clearInputs();
+                    await fetchData();
+                    alert(`Updated successfully! Changes saved to Google Sheet.`);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            }
+        }
+
+        function clearInputs() {
+            document.getElementById('winner-name').value = '';
+            document.getElementById('winner-symbol').value = '';
+            document.getElementById('jamaat-votes').value = '';
+            document.getElementById('bnp-votes').value = '';
+            document.getElementById('others-votes').value = '';
+            document.getElementById('constituency-select').value = '';
+        }
+
+        async function clearAll() {
+            if (!isAdminAuthenticated) {
+                alert('Please login first!');
+                return;
+            }
+            if (!confirm('Clear ALL data? This cannot be undone!')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/clear`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        password: ADMIN_PASSWORD
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    clearInputs();
+                    await fetchData();
+                    alert('All data cleared!');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            }
+        }
+
+        function exportData() {
+            if (!isAdminAuthenticated) {
+                alert('Please login first!');
+                return;
+            }
+            const dataStr = JSON.stringify(constituencies, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `election-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function updateDisplay() {
+            renderMap();
+            updateResults();
+            populateDropdown();
+        }
+
+        function getShortName(fullName) {
+            const shortForms = {
+                'Dhaka': 'DHK', 'Gazipur': 'GAZ', 'Tangail': 'TAN', 'Kishoreganj': 'KIS', 'Manikganj': 'MAN',
+                'Munshiganj': 'MUN', 'Narayanganj': 'NAR', 'Narsingdi': 'NRS', 'Faridpur': 'FAR', 'Gopalganj': 'GOP',
+                'Madaripur': 'MAD', 'Rajbari': 'RAJ', 'Shariatpur': 'SHA', 'Chattogram': 'CTG', 'Cumilla': 'CUM',
+                'Brahmanbaria': 'BRA', 'Chandpur': 'CHA', 'Lakshmipur': 'LAK', 'Noakhali': 'NOA', 'Feni': 'FEN',
+                "Cox's Bazar": 'COX', 'Khagrachari': 'KHA', 'Rangamati': 'RAN', 'Bandarban': 'BAN', 'Rajshahi': 'RJS',
+                'Bogura': 'BOG', 'Chapai Nawabganj': 'CNW', 'Naogaon': 'NAO', 'Natore': 'NAT', 'Pabna': 'PAB',
+                'Sirajganj': 'SIR', 'Joypurhat': 'JOY', 'Khulna': 'KHL', 'Bagerhat': 'BAG', 'Jashore': 'JAS',
+                'Jhenaidah': 'JHE', 'Kushtia': 'KUS', 'Satkhira': 'SAT', 'Chuadanga': 'CHU', 'Magura': 'MAG',
+                'Meherpur': 'MEH', 'Narail': 'NRL', 'Barishal': 'BAR', 'Barguna': 'BRG', 'Bhola': 'BHO',
+                'Jhalokati': 'JHA', 'Patuakhali': 'PAT', 'Pirojpur': 'PIR', 'Sylhet': 'SYL', 'Habiganj': 'HAB',
+                'Moulivibazar': 'MOU', 'Sunamganj': 'SUN', 'Rangpur': 'RGP', 'Dinajpur': 'DIN', 'Gaibandha': 'GAI',
+                'Kurigram': 'KUR', 'Lalmonirhat': 'LAL', 'Nilphamari': 'NIL', 'Panchagarh': 'PAN', 'Thakurgaon': 'THA',
+                'Mymensingh': 'MYM', 'Jamalpur': 'JAM', 'Netrokona': 'NET', 'Sherpur': 'SHE'
+            };
+
+            for (let [district, code] of Object.entries(shortForms)) {
+                if (fullName.startsWith(district)) {
+                    const number = fullName.split('-')[1] || '';
+                    return number ? `${code}-${number}` : code;
+                }
+            }
+            return fullName;
+        }
+
+        function renderMap() {
+            const map = document.getElementById('map');
+            map.innerHTML = '';
+
+            constituencies.forEach(c => {
+                const div = document.createElement('div');
+                div.className = `constituency ${c.winner}`;
+                div.textContent = getShortName(c.name);
+                
+                div.addEventListener('mouseenter', (e) => showTooltip(e, c));
+                div.addEventListener('mouseleave', hideTooltip);
+                
+                map.appendChild(div);
+            });
+        }
+
+        function showTooltip(e, c) {
+            const tooltip = document.getElementById('tooltip');
+            const title = document.getElementById('tooltip-title');
+            const details = document.getElementById('tooltip-details');
+
+            title.textContent = c.name;
+            
+            if (!c.reporting) {
+                details.innerHTML = 'No results yet';
+            } else {
+                const total = c.jamaatVotes + c.bnpVotes + c.othersVotes;
+                const winnerName = c.winner === 'jamaat' ? 'Jamaat Alliance' : c.winner === 'bnp' ? 'BNP' : c.winner === 'others' ? 'Others' : 'Tie';
+                
+                let html = `<strong>Winner:</strong> ${winnerName}`;
+                if (c.winnerName) {
+                    html += `<br><strong>Elected:</strong> ${c.winnerName}`;
+                }
+                if (c.winnerSymbol) {
+                    html += `<br><strong>Symbol:</strong> ${c.winnerSymbol}`;
+                }
+                html += `<br><br>
+                    Jamaat Alliance: ${c.jamaatVotes.toLocaleString()} (${((c.jamaatVotes / total) * 100).toFixed(1)}%)<br>
+                    BNP: ${c.bnpVotes.toLocaleString()} (${((c.bnpVotes / total) * 100).toFixed(1)}%)<br>
+                    Others: ${c.othersVotes.toLocaleString()} (${((c.othersVotes / total) * 100).toFixed(1)}%)
+                `;
+                details.innerHTML = html;
+            }
+
+            const rect = e.target.getBoundingClientRect();
+            const tooltipHeight = tooltip.offsetHeight;
+            
+            tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+            tooltip.style.top = (rect.top - tooltipHeight - 15) + 'px';
+            
+            tooltip.classList.add('show');
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').classList.remove('show');
+        }
+
+        function updateResults() {
+            let jamaatSeats = 0, bnpSeats = 0, othersSeats = 0;
+            let jamaatVotes = 0, bnpVotes = 0, othersVotes = 0;
+            let declared = 0;
+
+            constituencies.forEach(c => {
+                if (c.winner === 'jamaat') jamaatSeats++;
+                if (c.winner === 'bnp') bnpSeats++;
+                if (c.winner === 'others') othersSeats++;
+                if (c.reporting) declared++;
+                jamaatVotes += c.jamaatVotes;
+                bnpVotes += c.bnpVotes;
+                othersVotes += c.othersVotes;
+            });
+
+            const total = jamaatVotes + bnpVotes + othersVotes;
+            const jPct = total > 0 ? (jamaatVotes / total * 100).toFixed(1) : 0;
+            const bPct = total > 0 ? (bnpVotes / total * 100).toFixed(1) : 0;
+            const oPct = total > 0 ? (othersVotes / total * 100).toFixed(1) : 0;
+
+            document.getElementById('jamaat-seats').textContent = jamaatSeats;
+            document.getElementById('bnp-seats').textContent = bnpSeats;
+            document.getElementById('others-seats').textContent = othersSeats;
+            
+            document.getElementById('jamaat-percent').textContent = jPct + '%';
+            document.getElementById('bnp-percent').textContent = bPct + '%';
+            document.getElementById('others-percent').textContent = oPct + '%';
+            
+            document.getElementById('jamaat-progress').style.width = jPct + '%';
+            document.getElementById('bnp-progress').style.width = bPct + '%';
+            document.getElementById('others-progress').style.width = oPct + '%';
+
+            document.getElementById('declared-count').textContent = declared;
+            document.getElementById('total-votes').textContent = (total / 1000000).toFixed(1) + 'M';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('password-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                const loginPanel = document.getElementById('login-panel');
+                const toggleButton = document.querySelector('.toggle-admin');
+                
+                if (!loginPanel.classList.contains('hidden') && 
+                    !loginPanel.contains(e.target) && 
+                    e.target !== toggleButton) {
+                    loginPanel.classList.add('hidden');
+                }
+            });
+            
+            const select = document.getElementById('constituency-select');
+            select.addEventListener('change', function() {
+                const constNum = parseInt(this.value);
+                if (constNum) {
+                    const c = constituencies.find(cons => cons.number === constNum);
+                    if (c) {
+                        document.getElementById('winner-name').value = c.winnerName || '';
+                        document.getElementById('winner-symbol').value = c.winnerSymbol || '';
+                        document.getElementById('jamaat-votes').value = c.reporting ? c.jamaatVotes : '';
+                        document.getElementById('bnp-votes').value = c.reporting ? c.bnpVotes : '';
+                        document.getElementById('others-votes').value = c.reporting ? c.othersVotes : '';
+                    }
+                }
+            });
+
+            initPolling();
+            
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    if (pollTimer) clearInterval(pollTimer);
+                } else {
+                    initPolling();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
